@@ -169,7 +169,7 @@ export async function loadYears() {
       yearItem.innerHTML = `
         <div class="year-header">
           <span class="year-name">${data.year}</span>
-          <span class="year-total">₹${data.totalAmount.toFixed(2)}</span>
+          <span class="year-total">$${data.totalAmount.toFixed(2)}</span>
         </div>
         <div class="year-actions">
           <button onclick="selectYear('${doc.id}', ${data.year})" class="btn-select">View</button>
@@ -275,7 +275,7 @@ export async function loadDays() {
       dayItem.innerHTML = `
         <div class="day-header">
           <span class="day-name">${data.name}</span>
-          <span class="day-total">₹${data.totalAmount.toFixed(2)}</span>
+          <span class="day-total">$${data.totalAmount.toFixed(2)}</span>
         </div>
         <div class="day-actions">
           <button onclick="selectDay('${doc.id}', '${data.name}')" class="btn-select">View</button>
@@ -385,7 +385,7 @@ export async function loadVisits() {
       visitItem.innerHTML = `
         <div class="visit-header">
           <span class="visit-name">${data.name}</span>
-          <span class="visit-total">₹${data.totalAmount.toFixed(2)}</span>
+          <span class="visit-total">$${data.totalAmount.toFixed(2)}</span>
         </div>
         <div class="visit-actions">
           <button onclick="selectVisit('${doc.id}', '${data.name}')" class="btn-select">View Details</button>
@@ -493,7 +493,7 @@ export async function loadEntries() {
     
     if (snapshot.empty) {
       entriesList.innerHTML = '<p style="color: #666;">No entries yet. Add one above!</p>';
-      document.getElementById('entries-total').textContent = '₹0.00';
+      document.getElementById('entries-total').textContent = '$0.00';
       return;
     }
     
@@ -506,14 +506,14 @@ export async function loadEntries() {
       entryItem.innerHTML = `
         <div class="entry-content">
           <div class="entry-description">${data.description}</div>
-          <div class="entry-amount">₹${data.amount.toFixed(2)}</div>
+          <div class="entry-amount">$${data.amount.toFixed(2)}</div>
         </div>
         <button onclick="deleteEntry('${doc.id}')" class="btn-delete-small">Delete</button>
       `;
       entriesList.appendChild(entryItem);
     });
     
-    document.getElementById('entries-total').textContent = '₹' + total.toFixed(2);
+    document.getElementById('entries-total').textContent = '$' + total.toFixed(2);
   } catch (error) {
     console.error("Error loading entries:", error);
   }

@@ -39,7 +39,7 @@
             min="2000" 
             max="2100"
           >
-          <button class="btn-add" onclick="addYearFromInput()">Add Year</button>
+          <button class="btn-add" id="btn-add-year">Add Year</button>
         </div>
 
         <div id="years-list"></div>
@@ -49,7 +49,7 @@
       <section id="days-section" style="display: none;">
         <h2>📆 Days of Celebration</h2>
 
-        <button class="btn-back" onclick="backFromDays()">← Back to Years</button>
+        <button class="btn-back" id="btn-back-from-days">← Back to Years</button>
 
         <div class="form-group">
           <input 
@@ -57,7 +57,7 @@
             id="new-day-input" 
             placeholder="Day name (e.g., Chu Yi, Chu Er, First Day)" 
           >
-          <button class="btn-add" onclick="addDayFromInput()">Add Day</button>
+          <button class="btn-add" id="btn-add-day">Add Day</button>
         </div>
 
         <div id="days-list"></div>
@@ -67,7 +67,7 @@
       <section id="visits-section" style="display: none;">
         <h2>🏠 House Visits</h2>
 
-        <button class="btn-back" onclick="backFromVisits()">← Back to Days</button>
+        <button class="btn-back" id="btn-back-from-visits">← Back to Days</button>
 
         <div class="form-group">
           <input 
@@ -75,7 +75,7 @@
             id="new-visit-input" 
             placeholder="House name (e.g., Grandma's House, Uncle's Place)" 
           >
-          <button class="btn-add" onclick="addVisitFromInput()">Add House</button>
+          <button class="btn-add" id="btn-add-visit">Add House</button>
         </div>
 
         <div id="visits-list"></div>
@@ -85,7 +85,7 @@
       <section id="entries-section" style="display: none;">
         <h2>💰 Angpao Entries</h2>
 
-        <button class="btn-back" onclick="backFromEntries()">← Back to Houses</button>
+        <button class="btn-back" id="btn-back-from-entries">← Back to Houses</button>
 
         <div class="form-group">
           <input 
@@ -100,12 +100,12 @@
             id="entry-description-input" 
             placeholder="From (e.g., From Grandma)" 
           >
-          <button class="btn-add" onclick="addEntryFromInput()">Add Entry</button>
+          <button class="btn-add" id="btn-add-entry">Add Entry</button>
         </div>
 
         <div id="entries-list"></div>
 
-        <div id="entries-total" style="margin-top: 20px;">₹0.00</div>
+        <div id="entries-total" style="margin-top: 20px;">$0.00</div>
       </section>
 
       <!-- ========== ANALYTICS SECTION ========== -->
@@ -114,7 +114,7 @@
         <div style="position: relative; height: 300px;">
           <canvas id="yearComparisonChart"></canvas>
         </div>
-        <button class="btn-add" onclick="loadYearComparison()" style="margin-top: 20px;">Refresh Chart</button>
+        <button class="btn-add" id="btn-refresh-chart" style="margin-top: 20px;">Refresh Chart</button>
       </section>
     </div>
   </div>
@@ -124,16 +124,59 @@
     import { auth, db } from './firebase-config.js';
     import './app.js';
     
-    // Wait for app.js to set up window functions, then attach event listeners
+    // Attach all event listeners after app.js loads
     const setupEventListeners = () => {
       // Auth button
-      const authButton = document.getElementById('auth-button');
-      if (authButton && window.signInWithGoogle) {
-        authButton.onclick = window.signInWithGoogle;
+      const authBtn = document.getElementById('auth-button');
+      if (authBtn && window.signInWithGoogle) {
+        authBtn.onclick = window.signInWithGoogle;
+      }
+      
+      // Add buttons
+      const addYearBtn = document.getElementById('btn-add-year');
+      if (addYearBtn) {
+        addYearBtn.onclick = window.addYearFromInput;
+      }
+      
+      const addDayBtn = document.getElementById('btn-add-day');
+      if (addDayBtn) {
+        addDayBtn.onclick = window.addDayFromInput;
+      }
+      
+      const addVisitBtn = document.getElementById('btn-add-visit');
+      if (addVisitBtn) {
+        addVisitBtn.onclick = window.addVisitFromInput;
+      }
+      
+      const addEntryBtn = document.getElementById('btn-add-entry');
+      if (addEntryBtn) {
+        addEntryBtn.onclick = window.addEntryFromInput;
+      }
+      
+      // Back buttons
+      const backDaysBtn = document.getElementById('btn-back-from-days');
+      if (backDaysBtn && window.backFromDays) {
+        backDaysBtn.onclick = window.backFromDays;
+      }
+      
+      const backVisitsBtn = document.getElementById('btn-back-from-visits');
+      if (backVisitsBtn && window.backFromVisits) {
+        backVisitsBtn.onclick = window.backFromVisits;
+      }
+      
+      const backEntriesBtn = document.getElementById('btn-back-from-entries');
+      if (backEntriesBtn && window.backFromEntries) {
+        backEntriesBtn.onclick = window.backFromEntries;
+      }
+      
+      // Chart button
+      const chartBtn = document.getElementById('btn-refresh-chart');
+      if (chartBtn && window.loadYearComparison) {
+        chartBtn.onclick = window.loadYearComparison;
       }
     };
     
-    // Set up listeners after a small delay to ensure app.js is loaded
+    // Set up listeners after modules load
     setTimeout(setupEventListeners, 100);
     
     // Make addYearFromInput, addDayFromInput, etc. available globally
