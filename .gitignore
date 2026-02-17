@@ -3,9 +3,6 @@
 .env.local
 .env.*.local
 
-# Firebase Configuration (if storing sensitive keys)
-firebase-config.local.js
-
 # OS Files
 .DS_Store
 Thumbs.db

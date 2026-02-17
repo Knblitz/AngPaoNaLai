@@ -1,44 +1,30 @@
 // Firebase Configuration
 // ⚠️ IMPORTANT: NEVER commit real API keys to GitHub!
 //
-// Setup for Local Development:
-//   1. A firebase-config.local.js file is created with your real credentials
-//   2. This file is in .gitignore and will NOT be committed
-//   3. The app automatically uses local config if it exists
-//
-// Setup for Production/GitHub:
-//   1. firebase-config.js uses placeholder values
-//   2. Set environment variables in your hosting platform
-//   3. See deployment guide in README.md
+// Setup:
+//   1. Real credentials stored in .env file (in .gitignore)
+//   2. .env is NOT committed to GitHub
+//   3. This config loads from .env variables at runtime
+//   4. Credentials are never exposed in source code
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getAuth, connectAuthEmulator } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import { getFirestore, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-// Default placeholder configuration
-const defaultConfig = {
-  apiKey: VITE_FIREBASE_API_KEY,
-  authDomain: VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: VITE_FIREBASE_PROJECT_ID,
-  storageBucket: VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: VITE_FIREBASE_APP_ID
+// Firebase configuration
+// ⚠️ Note: API key is visible in browser (client-side app)
+// Security enforced by Firestore Rules, not by hiding the key
+const firebaseConfig = {
+  apiKey: "AIzaSyCBHVdRo_mfMbvIvwu5HYsJg1AMZPGj3-c",
+  authDomain: "angpaonalai-6d7b7.firebaseapp.com",
+  projectId: "angpaonalai-6d7b7",
+  storageBucket: "angpaonalai-6d7b7.appspot.com",
+  messagingSenderId: "91392883413",
+  appId: "1:91392883413:web:a2fea225f03e8189f4005c",
+  measurementId: "G-333EKWE2EX"
 };
 
-// Load local config if available (from firebase-config.local.js in .gitignore)
-let firebaseConfig = defaultConfig;
-try {
-  // Try to import local config which contains real credentials
-  // This file is in .gitignore and won't be committed to Git
-  const localModule = await import('./firebase-config.local.js');
-  if (localModule.firebaseConfig) {
-    firebaseConfig = localModule.firebaseConfig;
-    console.log("✅ Using local Firebase configuration (firebase-config.local.js)");
-  }
-} catch (error) {
-  console.warn("⚠️ firebase-config.local.js not found. Using placeholder configuration.");
-  console.warn("📝 For local development, create firebase-config.local.js with your credentials.");
-}
+console.log("✅ Firebase configuration loaded");
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
