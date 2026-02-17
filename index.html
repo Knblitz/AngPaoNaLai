@@ -18,7 +18,7 @@
 
     <!-- AUTH SECTION -->
     <div class="auth-section">
-      <button id="auth-button" onclick="signInWithGoogle()">Sign In with Google</button>
+      <button id="auth-button">Sign In with Google</button>
       <div id="user-info"></div>
     </div>
 
@@ -123,6 +123,18 @@
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import './app.js';
+    
+    // Wait for app.js to set up window functions, then attach event listeners
+    const setupEventListeners = () => {
+      // Auth button
+      const authButton = document.getElementById('auth-button');
+      if (authButton && window.signInWithGoogle) {
+        authButton.onclick = window.signInWithGoogle;
+      }
+    };
+    
+    // Set up listeners after a small delay to ensure app.js is loaded
+    setTimeout(setupEventListeners, 100);
     
     // Make addYearFromInput, addDayFromInput, etc. available globally
     window.addYearFromInput = function() {
