@@ -335,6 +335,7 @@ export function backFromDays() {
   document.getElementById('entries-section').style.display = 'none';
   
   updateBreadcrumb();
+  loadYears();
 }
 
 // ========== HOUSE VISITS OPERATIONS ==========
