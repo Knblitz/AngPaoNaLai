@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angpao Tracker - 🧧 Happy Lunar New Year</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>🧧 Angpao Tracker</h1>
+      <p class="subtitle">恭喜发财 - Wishing You Prosperity!</p>
+      <p class="tagline">Track your red envelope money this Lunar New Year</p>
+    </div>
+
+    <!-- AUTH SECTION -->
+    <div class="auth-section">
+      <button id="auth-button" onclick="signInWithGoogle()">Sign In with Google</button>
+      <div id="user-info"></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="content">
+      <!-- BREADCRUMB NAVIGATION -->
+      <div id="breadcrumb"></div>
+
+      <!-- ========== YEARS SECTION ========== -->
+      <section id="years-section" style="display: block;">
+        <h2>📅 Select or Create a Year</h2>
+
+        <div class="form-group">
+          <input 
+            type="number" 
+            id="new-year-input" 
+            placeholder="Enter year (e.g., 2026)" 
+            min="2000" 
+            max="2100"
+          >
+          <button class="btn-add" onclick="addYearFromInput()">Add Year</button>
+        </div>
+
+        <div id="years-list"></div>
+      </section>
+
+      <!-- ========== DAYS SECTION ========== -->
+      <section id="days-section" style="display: none;">
+        <h2>📆 Days of Celebration</h2>
+
+        <button class="btn-back" onclick="backFromDays()">← Back to Years</button>
+
+        <div class="form-group">
+          <input 
+            type="text" 
+            id="new-day-input" 
+            placeholder="Day name (e.g., Chu Yi, Chu Er, First Day)" 
+          >
+          <button class="btn-add" onclick="addDayFromInput()">Add Day</button>
+        </div>
+
+        <div id="days-list"></div>
+      </section>
+
+      <!-- ========== HOUSE VISITS SECTION ========== -->
+      <section id="visits-section" style="display: none;">
+        <h2>🏠 House Visits</h2>
+
+        <button class="btn-back" onclick="backFromVisits()">← Back to Days</button>
+
+        <div class="form-group">
+          <input 
+            type="text" 
+            id="new-visit-input" 
+            placeholder="House name (e.g., Grandma's House, Uncle's Place)" 
+          >
+          <button class="btn-add" onclick="addVisitFromInput()">Add House</button>
+        </div>
+
+        <div id="visits-list"></div>
+      </section>
+
+      <!-- ========== ENTRIES SECTION ========== -->
+      <section id="entries-section" style="display: none;">
+        <h2>💰 Angpao Entries</h2>
+
+        <button class="btn-back" onclick="backFromEntries()">← Back to Houses</button>
+
+        <div class="form-group">
+          <input 
+            type="number" 
+            id="entry-amount-input" 
+            placeholder="Amount ($)" 
+            step="0.01" 
+            min="0"
+          >
+          <input 
+            type="text" 
+            id="entry-description-input" 
+            placeholder="From (e.g., From Grandma)" 
+          >
+          <button class="btn-add" onclick="addEntryFromInput()">Add Entry</button>
+        </div>
+
+        <div id="entries-list"></div>
+
+        <div id="entries-total" style="margin-top: 20px;">₹0.00</div>
+      </section>
+
+      <!-- ========== ANALYTICS SECTION ========== -->
+      <section id="analytics-section">
+        <h2>📊 Year-over-Year Comparison</h2>
+        <div style="position: relative; height: 300px;">
+          <canvas id="yearComparisonChart"></canvas>
+        </div>
+        <button class="btn-add" onclick="loadYearComparison()" style="margin-top: 20px;">Refresh Chart</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- FIREBASE SCRIPTS -->
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import './app.js';
+    
+    // Make addYearFromInput, addDayFromInput, etc. available globally
+    window.addYearFromInput = function() {
+      const input = document.getElementById('new-year-input');
+      if (input.value.trim()) {
+        window.addYear(input.value.trim());
+        input.value = '';
+      } else {
+        alert('Please enter a year');
+      }
+    };
+
+    window.addDayFromInput = function() {
+      const input = document.getElementById('new-day-input');
+      if (input.value.trim()) {
+        window.addDay(input.value.trim());
+        input.value = '';
+      } else {
+        alert('Please enter a day name');
+      }
+    };
+
+    window.addVisitFromInput = function() {
+      const input = document.getElementById('new-visit-input');
+      if (input.value.trim()) {
+        window.addVisit(input.value.trim());
+        input.value = '';
+      } else {
+        alert('Please enter a house name');
+      }
+    };
+
+    window.addEntryFromInput = function() {
+      const amountInput = document.getElementById('entry-amount-input');
+      const descInput = document.getElementById('entry-description-input');
+      const amount = amountInput.value.trim();
+      const description = descInput.value.trim();
+
+      if (!amount) {
+        alert('Please enter an amount');
+        return;
+      }
+      if (!description) {
+        alert('Please enter a description');
+        return;
+      }
+
+      window.addEntry(amount, description);
+      amountInput.value = '';
+      descInput.value = '';
+    };
+
+    // Allow Enter key to submit forms
+    document.getElementById('new-year-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') window.addYearFromInput();
+    });
+    document.getElementById('new-day-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') window.addDayFromInput();
+    });
+    document.getElementById('new-visit-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') window.addVisitFromInput();
+    });
+    document.getElementById('entry-amount-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (document.activeElement === document.getElementById('entry-amount-input')) {
+          document.getElementById('entry-description-input').focus();
+        }
+      }
+    });
+    document.getElementById('entry-description-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') window.addEntryFromInput();
+    });
+
+    // Year-over-year comparison chart
+    let yearComparisonChart = null;
+
+    window.loadYearComparison = async function() {
+      const { auth, db } = await import('./firebase-config.js');
+      const { collection, getDocs, query, orderBy } = await import(
+        'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js'
+      );
+
+      if (!auth.currentUser) {
+        alert('Please sign in first');
+        return;
+      }
+
+      try {
+        const yearsRef = collection(db, 'users', auth.currentUser.uid, 'years');
+        const q = query(yearsRef, orderBy('year', 'asc'));
+        const snapshot = await getDocs(q);
+
+        const years = [];
+        const totals = [];
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          years.push(data.year.toString());
+          totals.push(data.totalAmount);
+        });
+
+        const ctx = document.getElementById('yearComparisonChart').getContext('2d');
+
+        if (yearComparisonChart) {
+          yearComparisonChart.destroy();
+        }
+
+        yearComparisonChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: years,
+            datasets: [{
+              label: 'Total Angpao Collected ($)',
+              data: totals,
+              borderColor: '#dc143c',
+              backgroundColor: 'rgba(220, 20, 60, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 6,
+              pointBackgroundColor: '#ffd700',
+              pointBorderColor: '#dc143c',
+              pointBorderWidth: 2,
+              pointHoverRadius: 8,
+              hoverBackgroundColor: '#ffd700'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  color: '#2c3e50',
+                  font: {
+                    size: 14,
+                    weight: '600'
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  color: '#2c3e50',
+                  font: {
+                    size: 12
+                  },
+                  callback: function(value) {
+                    return '$' + value.toFixed(2);
+                  }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                },
+                title: {
+                  display: true,
+                  text: 'Total Amount ($)'
+                }
+              },
+              x: {
+                ticks: {
+                  color: '#2c3e50',
+                  font: {
+                    size: 12
+                  }
+                },
+                grid: {
+                  display: true,
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              }
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error loading year comparison:', error);
+        alert('Error loading chart: ' + error.message);
+      }
+    };
+
+    // Load chart on page load if user is signed in
+    auth.onAuthStateChanged(() => {
+      setTimeout(() => {
+        if (auth.currentUser) {
+          window.loadYearComparison();
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>
