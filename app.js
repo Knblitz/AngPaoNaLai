@@ -326,13 +326,10 @@ export async function selectDay(dayId, dayName) {
 }
 
 export function backFromDays() {
-  currentDay = null;
   currentYear = null;
   
   document.getElementById('years-section').style.display = 'block';
   document.getElementById('days-section').style.display = 'none';
-  document.getElementById('visits-section').style.display = 'none';
-  document.getElementById('entries-section').style.display = 'none';
   
   updateBreadcrumb();
   loadYears();
@@ -435,12 +432,13 @@ export async function selectVisit(visitId, visitName) {
 
 export function backFromVisits() {
   currentVisit = null;
-  
-  document.getElementById('visits-section').style.display = 'block';
-  document.getElementById('entries-section').style.display = 'none';
-  
+  currentDay = null;
+
+  document.getElementById('days-section').style.display = 'block';
+  document.getElementById('visits-section').style.display = 'none';
+
   updateBreadcrumb();
-  loadVisits();
+  loadDays();
 }
 
 // ========== ANGPAO ENTRIES OPERATIONS ==========
